@@ -584,13 +584,13 @@
           <form id="signup-form" class="form-grid auth-form" hidden autocomplete="on">
             <label>Seu nome<input name="name" type="text" minlength="2" maxlength="80" placeholder="Como gostaria de ser chamado?" autocomplete="name" required /></label>
             <label>E-mail<input name="email" type="email" maxlength="254" placeholder="voce@email.com" autocomplete="email" required /></label>
-            <label>Senha (mínimo 12 caracteres)
+            <label>Senha (mínimo 8 caracteres)
               <span class="auth-password">
-                <input id="signup-password" type="password" name="password" minlength="12" required autocomplete="new-password" />
+                <input id="signup-password" type="password" name="password" minlength="8" required autocomplete="new-password" />
                 <button type="button" class="auth-eye" data-toggle-password="signup-password" aria-label="Mostrar ou ocultar senha" aria-pressed="false">Mostrar</button>
               </span>
             </label>
-            <label>Confirme a senha<input name="confirm" type="password" minlength="12" required autocomplete="new-password" /></label>
+            <label>Confirme a senha<input name="confirm" type="password" minlength="8" required autocomplete="new-password" /></label>
             <button class="primary" type="submit">Criar conta →</button>
           </form>
           <form id="forgot-form" class="form-grid auth-form" hidden>
@@ -599,8 +599,8 @@
             <button class="text-button" type="button" data-auth-mode="login">Voltar para entrar</button>
           </form>
           <form id="reset-form" class="form-grid auth-form" hidden>
-            <label>Nova senha (mínimo 12 caracteres)<input name="password" type="password" minlength="12" autocomplete="new-password" required /></label>
-            <label>Confirme a nova senha<input name="confirm" type="password" minlength="12" autocomplete="new-password" required /></label>
+            <label>Nova senha (mínimo 8 caracteres)<input name="password" type="password" minlength="8" autocomplete="new-password" required /></label>
+            <label>Confirme a nova senha<input name="confirm" type="password" minlength="8" autocomplete="new-password" required /></label>
             <button class="primary" type="submit">Atualizar senha</button>
           </form>
           <div id="auth-provider" class="auth-provider">
@@ -645,3 +645,4 @@
     <noscript>Ative o JavaScript para usar o Contador.</noscript>
   </body>
 </html>
+
