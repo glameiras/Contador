@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#FFFFFF" />
+    <meta
+      name="description"
+      content="Contador: controle financeiro pessoal, simples e organizado."
+    />
+    <title>Contador | Início</title>
+    <link rel="stylesheet" href="./css/style.css" />
+    <script src="./js/config.js"></script>
+    <script src="./js/app.js" defer></script>
+    <script type="module" src="./js/cloud.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a href="#dashboard" class="brand" aria-label="Contador, início"
+          ><span class="brand-mark" aria-hidden="true">c.</span>Contador<span
+            class="local-badge" id="mode-badge"
+            >LOCAL</span
+          ></a
+        >
+        <div class="header-actions">
+          <span id="current-user" class="account-email" hidden></span>
+          <button id="logout" class="icon-button" type="button" hidden>Sair</button>
+          <button
+            id="privacy"
+            class="icon-button"
+            type="button"
+            aria-pressed="false"
+          >
+            Ocultar valores</button
+          ><button
+            id="theme"
+            class="icon-button"
+            type="button"
+            aria-pressed="false"
+          >
+            Modo escuro
+          </button>
+        </div>
+      </header>
+      <main id="main">
+        <section id="dashboard" class="page">
+          <div class="page-heading heading-row">
+            <div>
+              <p class="eyebrow">SEU DINHEIRO, ORGANIZADO</p>
+              <h1>Visão geral<span class="accent-dot">.</span></h1>
+              <p class="muted">Clareza para decidir seu próximo passo.</p>
+            </div>
+            <label class="month-label"
+              >Período<input type="month" id="dashboard-month"
+            /></label>
+          </div>
+          <div class="overview">
+            <article class="balance-card">
+              <div class="balance-top">
+                <h2>Saldo total nas contas</h2>
+                <span aria-hidden="true">↗</span>
+              </div>
+              <p id="total-balance" class="big-money money">R$ 0,00</p>
+              <p id="account-count" class="muted">Nenhuma conta cadastrada</p>
+              <button class="text-button" data-page="accounts">
+                Ver minhas contas →
+              </button>
+            </article>
+            <article class="stat-card">
+              <span class="stat-symbol positive" aria-hidden="true">↙</span>
+              <h2>Entradas do mês</h2>
+              <p id="month-income" class="stat-money positive money"></p>
+              <p id="income-change" class="muted money"></p>
+            </article>
+            <article class="stat-card">
+              <span class="stat-symbol negative" aria-hidden="true">↗</span>
+              <h2>Gastos do mês</h2>
+              <p id="month-expense" class="stat-money negative money"></p>
+              <p id="expense-change" class="muted money"></p>
+            </article>
+          </div>
+          <div class="panel chart-panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Seu mês em movimento</h2>
+                <p class="muted">Valores diários · mesma escala em reais</p>
+              </div>
+              <div class="legend">
+                <span><i class="green"></i>Entradas</span
+                ><span><i class="red"></i>Gastos</span>
+              </div>
+            </div>
+            <div id="chart" class="chart-wrap money"></div>
+            <p id="chart-summary" class="muted money"></p>
+          </div>
+          <div class="panel-heading section-space">
+            <h2>Últimos lançamentos</h2>
+            <button class="text-button" data-page="history">
+              Ver histórico →
+            </button>
+          </div>
+          <div id="recent-list" class="stack"></div>
+        </section>
+        <section id="accounts" class="page" hidden>
+          <div class="page-heading">
+            <p class="eyebrow">CONTADOR / SEU CONTROLE</p>
+            <h1>Suas contas</h1>
+            <p class="muted">
+              Uma visão clara do dinheiro em cada instituição.
+            </p>
+          </div>
+          <div class="split">
+            <div class="panel">
+              <h2>Adicionar conta</h2>
+              <form id="account-form" class="form-grid">
+                <label
+                  >Nome da conta<input
+                    name="name"
+                    type="text"
+                    maxlength="60"
+                    placeholder="Ex.: Itaú principal"
+                    required /></label
+                ><label
+                  >Saldo inicial (R$)<input
+                    name="initial"
+                    type="number"
+                    step="0.01"
+                    required /></label
+                ><button class="primary" type="submit">Cadastrar conta</button>
+              </form>
+            </div>
+            <div id="account-list" class="stack"></div>
+          </div>
+        </section>
+        <section id="income" class="page" hidden>
+          <div class="page-heading">
+            <p class="eyebrow">CONTADOR / SEU CONTROLE</p>
+            <h1>Entradas</h1>
+            <p class="muted">Registre o dinheiro que você já recebeu.</p>
+          </div>
+          <div class="panel narrow">
+            <form id="income-form" class="form-grid">
+              <label
+                >Descrição<input
+                  name="description"
+                  type="text"
+                  maxlength="100"
+                  placeholder="Descreva o lançamento"
+                  required /></label
+              ><label
+                >Valor (R$)<input
+                  name="value"
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  required /></label
+              ><label
+                >Instituição financeira<select
+                  name="account"
+                  class="account-options"
+                  required
+                ></select></label
+              ><label
+                >Data<input
+                  name="date"
+                  type="date"
+                  class="today"
+                  required /></label
+              ><label
+                >Categoria<input
+                  name="category"
+                  type="text"
+                  maxlength="40"
+                  value="Outros"
+                  required /></label
+              ><button class="primary" type="submit">Registrar entrada</button>
+            </form>
+          </div>
+        </section>
+        <section id="expense" class="page" hidden>
+          <div class="page-heading">
+            <p class="eyebrow">CONTADOR / SEU CONTROLE</p>
+            <h1>Gastos</h1>
+            <p class="muted">
+              Acompanhe suas despesas e para onde o dinheiro vai.
+            </p>
+          </div>
+          <div class="panel narrow">
+            <form id="expense-form" class="form-grid">
+              <label
+                >Descrição<input
+                  name="description"
+                  type="text"
+                  maxlength="100"
+                  placeholder="Descreva o lançamento"
+                  required /></label
+              ><label
+                >Valor (R$)<input
+                  name="value"
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  required /></label
+              ><label
+                >Instituição financeira<select
+                  name="account"
+                  class="account-options"
+                  required
+                ></select></label
+              ><label
+                >Data<input
+                  name="date"
+                  type="date"
+                  class="today"
+                  required /></label
+              ><label
+                >Categoria<input
+                  name="category"
+                  type="text"
+                  maxlength="40"
+                  value="Outros"
+                  required /></label
+              ><button class="primary" type="submit">Registrar gasto</button>
+            </form>
+          </div>
+        </section>
+        <section id="transfer" class="page" hidden>
+          <div class="page-heading">
+            <p class="eyebrow">CONTADOR / SEU CONTROLE</p>
+            <h1>Transferências</h1>
+            <p class="muted">Entre suas contas, sem alterar o saldo total.</p>
+          </div>
+          <div class="panel narrow">
+            <form id="transfer-form" class="form-grid">
+              <label
+                >Conta de origem<select
+                  name="account"
+                  class="account-options"
+                  required
+                ></select></label
+              ><label
+                >Conta de destino<select
+                  name="to"
+                  class="account-options"
+                  required
+                ></select></label
+              ><label
+                >Valor (R$)<input
+                  name="value"
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  required /></label
+              ><label
+                >Data<input
+                  name="date"
+                  type="date"
+                  class="today"
+                  required /></label
+              ><label
+                >Descrição<input
+                  name="description"
+                  type="text"
+                  maxlength="100"
+                  value="Transferência entre contas"
+                  required /></label
+              ><button class="primary" type="submit">Transferir</button>
+            </form>
+          </div>
+        </section>
+        <section id="cards" class="page" hidden>
+          <div class="page-heading">
+            <p class="eyebrow">CONTADOR / SEU CONTROLE</p>
+            <h1>Cartões e faturas</h1>
+            <p class="muted">
+              Compras entram nos gastos; pagar a fatura desconta da conta sem
+              duplicar a despesa.
+            </p>
+          </div>
+          <div class="split">
+            <div class="panel">
+              <h2>Novo cartão</h2>
+              <form id="card-form" class="form-grid">
+                <label
+                  >Nome do cartão<input
+                    name="name"
+                    type="text"
+                    maxlength="60"
+                    required /></label
+                ><label
+                  >Limite (R$)<input
+                    name="limit"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    required /></label
+                ><label
+                  >Dia de vencimento<input
+                    name="due"
+                    type="number"
+                    min="1"
+                    max="31"
+                    required /></label
+                ><button class="primary" type="submit">Cadastrar cartão</button>
+              </form>
+            </div>
+            <div class="panel">
+              <h2>Compra no crédito</h2>
+              <form id="purchase-form" class="form-grid">
+                <label
+                  >Cartão<select
+                    name="card"
+                    class="card-options"
+                    required
+                  ></select></label
+                ><label
+                  >Descrição<input
+                    name="description"
+                    type="text"
+                    maxlength="100"
+                    required /></label
+                ><label
+                  >Valor (R$)<input
+                    name="value"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    required /></label
+                ><label
+                  >Data<input
+                    name="date"
+                    type="date"
+                    class="today"
+                    required /></label
+                ><label
+                  >Mês da fatura<input
+                    name="month"
+                    type="month"
+                    class="this-month"
+                    required /></label
+                ><button class="primary" type="submit">Registrar compra</button>
+              </form>
+            </div>
+          </div>
+          <div id="card-list" class="stack section-space"></div>
+        </section>
+        <section id="recurring" class="page" hidden>
+          <div class="page-heading">
+            <p class="eyebrow">CONTADOR / SEU CONTROLE</p>
+            <h1>Gastos recorrentes</h1>
+            <p class="muted">
+              Confira os vencimentos e lance cada ocorrência quando ela for
+              paga.
+            </p>
+          </div>
+          <div class="split">
+            <div class="panel">
+              <h2>Nova recorrência</h2>
+              <form id="recurring-form" class="form-grid">
+                <label
+                  >Descrição<input
+                    name="description"
+                    type="text"
+                    maxlength="100"
+                    required /></label
+                ><label
+                  >Valor (R$)<input
+                    name="value"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    required /></label
+                ><label
+                  >Instituição financeira<select
+                    name="account"
+                    class="account-options"
+                    required
+                  ></select></label
+                ><label
+                  >Primeiro vencimento<input
+                    name="date"
+                    type="date"
+                    class="today"
+                    required /></label
+                ><label
+                  >Periodicidade<select name="period" class="" required>
+                    <option value="monthly">Mensal</option>
+                    <option value="weekly">Semanal</option>
+                    <option value="yearly">Anual</option>
+                  </select></label
+                ><button class="primary" type="submit">
+                  Criar recorrência
+                </button>
+              </form>
+            </div>
+            <div id="recurring-list" class="stack"></div>
+          </div>
+        </section>
+        <section id="goals" class="page" hidden>
+          <div class="page-heading">
+            <p class="eyebrow">CONTADOR / SEU CONTROLE</p>
+            <h1>Metas financeiras</h1>
+            <p class="muted">
+              Acompanhe suas reservas. Estes valores são informativos e não
+              movimentam contas.
+            </p>
+          </div>
+          <div class="split">
+            <div class="panel">
+              <h2>Novo objetivo</h2>
+              <form id="goal-form" class="form-grid">
+                <label
+                  >Objetivo<input
+                    name="name"
+                    type="text"
+                    maxlength="60"
+                    placeholder="Ex.: Reserva de emergência"
+                    required /></label
+                ><label
+                  >Valor da meta (R$)<input
+                    name="target"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    required /></label
+                ><button class="primary" type="submit">Criar meta</button>
+              </form>
+            </div>
+            <div id="goal-list" class="stack"></div>
+          </div>
+        </section>
+        <section id="history" class="page" hidden>
+          <div class="page-heading">
+            <p class="eyebrow">CONTADOR / SEU CONTROLE</p>
+            <h1>Histórico</h1>
+            <p class="muted">Encontre, edite ou exclua seus lançamentos.</p>
+          </div>
+          <div class="panel">
+            <form id="filters" class="filters">
+              <label
+                >Buscar<input
+                  name="search"
+                  type="search"
+                  placeholder="Descrição ou categoria" /></label
+              ><label
+                >Conta<select
+                  name="account"
+                  class="account-options"
+                  data-all="true"
+                ></select></label
+              ><label
+                >Tipo<select name="type">
+                  <option value="">Todos</option>
+                  <option value="income">Entradas</option>
+                  <option value="expense">Gastos</option>
+                  <option value="transfer">Transferências</option>
+                  <option value="payment">Pagamentos de fatura</option>
+                  <option value="purchase">Compras no crédito</option>
+                </select></label
+              ><label>De<input name="from" type="date" /></label
+              ><label>Até<input name="until" type="date" /></label
+              ><label
+                >Valor exato (R$)<input
+                  name="value"
+                  type="number"
+                  step="0.01"
+                  min="0" /></label
+              ><button type="reset" class="secondary">Limpar filtros</button>
+            </form>
+          </div>
+          <p id="history-count" class="muted section-space"></p>
+          <div id="history-list" class="stack"></div>
+        </section>
+        <section id="settings" class="page" hidden>
+          <div class="page-heading">
+            <p class="eyebrow">CONTADOR / SEU CONTROLE</p>
+            <h1>Preferências</h1>
+            <p class="muted">Seu espaço, do seu jeito.</p>
+          </div>
+          <div class="panel narrow">
+            <h2 id="data-heading">Dados locais</h2>
+            <p id="storage-description">No modo local, as informações ficam neste navegador. Ative o Supabase para contas individuais e sincronização.</p>
+            <p class="muted">
+              Ocultar valores protege a visualização da tela; não criptografa os
+              dados. Limpar os dados do navegador remove os registros locais.
+            </p>
+            <button id="export" class="primary" type="button">
+              Baixar backup JSON
+            </button>
+            <p class="muted">
+              O backup contém seus dados financeiros. Guarde em um local
+              privado.
+            </p>
+            <h2 class="section-space">Importar backup</h2>
+            <p class="muted">Importar um JSON do Contador substitui os dados atuais após confirmação. Faça um backup antes.</p>
+            <label>Arquivo JSON<input id="import-file" type="file" accept="application/json,.json" /></label>
+            <h2 class="section-space">Contador Premium</h2>
+            <p>Em planejamento: relatórios avançados, exportação e automações. Nenhuma cobrança é feita nesta versão.</p>
+            <p class="muted">Conexão bancária automática e cobrança Premium exigem integrações de produção adicionais.</p>
+          </div>
+        </section>
+        <section id="more" class="page" hidden>
+          <div class="page-heading">
+            <p class="eyebrow">CONTADOR / SEU CONTROLE</p>
+            <h1>Seu controle, completo</h1>
+            <p class="muted">Tudo o que você precisa em um só lugar.</p>
+          </div>
+          <div class="menu-grid">
+            <button class="menu-card" data-page="transfer">
+              <strong>Transferências</strong
+              ><span>Mova dinheiro entre suas contas</span
+              ><b aria-hidden="true">↗</b></button
+            ><button class="menu-card" data-page="cards">
+              <strong>Cartões</strong><span>Limites, compras e faturas</span
+              ><b aria-hidden="true">↗</b></button
+            ><button class="menu-card" data-page="recurring">
+              <strong>Recorrências</strong
+              ><span>Organize gastos periódicos</span
+              ><b aria-hidden="true">↗</b></button
+            ><button class="menu-card" data-page="goals">
+              <strong>Metas</strong><span>Acompanhe seus objetivos</span
+              ><b aria-hidden="true">↗</b></button
+            ><button class="menu-card" data-page="history">
+              <strong>Histórico</strong
+              ><span>Consulte e revise lançamentos</span
+              ><b aria-hidden="true">↗</b></button
+            ><button class="menu-card" data-page="settings">
+              <strong>Preferências</strong><span>Backup e informações</span
+              ><b aria-hidden="true">↗</b>
+            </button>
+          </div>
+        </section>
+      </main>
+      <nav class="bottom-nav" aria-label="Navegação principal">
+        <button data-page="dashboard" type="button">
+          <span aria-hidden="true">⌂</span>Início</button
+        ><button data-page="accounts" type="button">
+          <span aria-hidden="true">▤</span>Saldo</button
+        ><button data-page="expense" type="button">
+          <span aria-hidden="true">−</span>Gastos</button
+        ><button data-page="income" type="button">
+          <span aria-hidden="true">+</span>Entradas</button
+        ><button data-page="more" type="button">
+          <span aria-hidden="true">⋯</span>Mais
+        </button>
+      </nav>
+      <footer>Contador · Seu dinheiro na direção certa.</footer>
+    </div>
+    <section id="auth-screen" class="auth-screen" hidden aria-label="Acessar Contador">
+      <div class="auth-card">
+        <div class="auth-brand"><span class="brand-mark">c.</span> Contador</div>
+        <p class="eyebrow">FINANÇAS DO SEU JEITO</p>
+        <h1 id="auth-title">Entre na sua conta</h1>
+        <p id="auth-message" class="muted" role="status" aria-live="polite">Seu dinheiro, seu espaço.</p>
+        <div class="auth-tabs" id="auth-tabs">
+          <button data-auth-mode="login" type="button" aria-pressed="true">Entrar</button>
+          <button data-auth-mode="signup" type="button" aria-pressed="false">Criar conta</button>
+        </div>
+        <form id="login-form" class="form-grid auth-form" autocomplete="on">
+          <label>E-mail<input type="email" name="email" required autocomplete="email" maxlength="254" /></label>
+          <label>Senha<input type="password" name="password" required autocomplete="current-password" /></label>
+          <button class="primary" type="submit">Entrar</button>
+          <button class="text-button" type="button" data-auth-mode="forgot">Esqueci minha senha</button>
+        </form>
+        <form id="signup-form" class="form-grid auth-form" hidden autocomplete="on">
+          <label>E-mail<input type="email" name="email" required autocomplete="email" maxlength="254" /></label>
+          <label>Senha (mínimo 12 caracteres)<input type="password" name="password" minlength="12" required autocomplete="new-password" /></label>
+          <label>Confirme a senha<input type="password" name="confirm" minlength="12" required autocomplete="new-password" /></label>
+          <button class="primary" type="submit">Criar conta</button>
+        </form>
+        <form id="forgot-form" class="form-grid auth-form" hidden>
+          <label>Seu e-mail<input type="email" name="email" maxlength="254" required autocomplete="email" /></label>
+          <button class="primary" type="submit">Enviar link de recuperação</button>
+          <button class="text-button" type="button" data-auth-mode="login">Voltar para entrar</button>
+        </form>
+        <form id="reset-form" class="form-grid auth-form" hidden>
+          <label>Nova senha (mínimo 12 caracteres)<input type="password" name="password" minlength="12" autocomplete="new-password" required /></label>
+          <label>Confirme a nova senha<input type="password" name="confirm" minlength="12" autocomplete="new-password" required /></label>
+          <button class="primary" type="submit">Atualizar senha</button>
+        </form>
+        <small>Seus dados são associados à sua conta e protegidos por regras de acesso no banco. Nunca compartilhe sua senha.</small>
+      </div>
+    </section>
+    <div id="notice" role="status" aria-live="polite" hidden></div>
+    <div id="fatal" class="fatal" role="alert" hidden></div>
+    <dialog id="edit-dialog">
+      <form id="edit-form" class="form-grid">
+        <div class="panel-heading">
+          <h2>Editar lançamento</h2>
+          <button type="button" id="close-edit" aria-label="Fechar">×</button>
+        </div>
+        <input name="id" type="hidden" /><label
+          >Descrição<input name="description" maxlength="100" required /></label
+        ><label
+          >Valor (R$)<input
+            name="value"
+            type="number"
+            min="0.01"
+            step="0.01"
+            required /></label
+        ><label
+          >Conta<select
+            name="account"
+            class="account-options"
+            required
+          ></select></label
+        ><label>Data<input name="date" type="date" required /></label
+        ><label
+          >Categoria<input name="category" maxlength="40" required /></label
+        ><button class="primary" type="submit">Salvar alteração</button>
+      </form>
+    </dialog>
+    <noscript>Ative o JavaScript para usar o Contador.</noscript>
+  </body>
+</html>
