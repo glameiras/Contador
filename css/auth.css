@@ -1,0 +1,89 @@
+/* Contador — experiência de acesso inspirada na ergonomia do FitTrack.
+ * Identidade própria: verde Contador, contraste alto e layout mobile-first.
+ */
+.auth-screen {
+  min-height: 100vh; min-height: 100dvh;
+  display: grid; place-items: center; padding: 32px 16px;
+  background:
+    radial-gradient(ellipse 460px 310px at 50% 0%, rgba(159,218,107,.12), transparent 80%),
+    #0a110d;
+  color: #f3f7f0;
+}
+.auth-wrap { width: min(100%, 460px); }
+.auth-screen .auth-brand {
+  display: flex; align-items: center; gap: 13px;
+  margin: 0 0 28px 2px; font-size: 26px; font-weight: 780; letter-spacing: -.9px;
+}
+.auth-screen .brand-mark {
+  width: 51px; height: 51px; border-radius: 15px;
+  background: #d5f783; color: #182619; font-size: 31px; font-weight: 800;
+}
+.auth-brand-copy { display: grid; line-height: 1.15; gap: 4px; }
+.auth-brand-copy small { font-size: 12px; color: #91a597; font-weight: 450; letter-spacing: 0; }
+.auth-screen .auth-card {
+  display: grid; gap: 20px;
+  width: 100%; padding: clamp(22px, 5vw, 32px);
+  border: 1px solid #273b2b; border-radius: 22px;
+  background: #142019; box-shadow: 0 26px 90px #0007;
+}
+.auth-card .eyebrow { margin-bottom: 8px; color: #b4d9a0; }
+.auth-card h1 { font-size: clamp(26px, 5vw, 33px); letter-spacing: -.95px; line-height: 1.18; }
+.auth-card .muted, .auth-card small { color: #a8bbab; }
+.auth-card #auth-message { margin-top: 9px; min-height: 22px; font-size: 13px; line-height: 1.5; }
+.auth-card .auth-tabs {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
+  background: #0c1510; border: 1px solid #2b3e30;
+  border-radius: 12px; padding: 4px;
+}
+.auth-card .auth-tabs button {
+  background: transparent; border: 0; color: #acbeae;
+  min-height: 42px; border-radius: 9px; font-weight: 550;
+}
+.auth-card .auth-tabs button[aria-pressed="true"] {
+  background: #2a3b2e; color: #f8fff6; font-weight: 720;
+}
+.auth-card .auth-form { gap: 15px; }
+.auth-card .auth-form label { gap: 7px; font-size: 13px; color: #e2ece0; }
+.auth-card .auth-form input {
+  background: #0a130e; color: #f8fff6; border: 1px solid #344839;
+  border-radius: 11px; min-height: 49px; padding: 11px 13px;
+}
+.auth-card .auth-form input::placeholder { color: #819589; }
+.auth-card input:focus-visible, .auth-card button:focus-visible {
+  outline: 2px solid #d5f783; outline-offset: 2px;
+}
+.auth-password { position: relative; }
+.auth-password input { padding-right: 85px !important; }
+.auth-eye {
+  position: absolute; right: 7px; top: 50%; transform: translateY(-50%);
+  background: transparent; border: 0; color: #b7d9ae;
+  font-size: 12px; font-weight: 700; padding: 9px 8px;
+}
+.auth-card .primary {
+  width: 100%; background: #d5f783; color: #1b281b;
+  border-radius: 11px; font-weight: 750; min-height: 50px;
+}
+.auth-card .text-button { text-align: left; font-size: 13px; color: #d0f5a4; }
+.auth-provider { display: grid; gap: 12px; }
+.auth-separator {
+  display: flex; align-items: center; gap: 12px; font-size: 11px;
+  color: #91a697; text-transform: uppercase; letter-spacing: 1px;
+}
+.auth-separator::before, .auth-separator::after {
+  content: ""; height: 1px; flex: 1; background: #334538;
+}
+.auth-google, .auth-demo-button {
+  border: 1px solid #3e5543; border-radius: 11px;
+  background: #17271c; color: #f1f7f0; min-height: 49px;
+  padding: 12px; font-weight: 650;
+}
+.auth-google:hover, .auth-demo-button:hover { background: #243629; }
+.auth-footnote { border-top: 1px solid #2f4233; padding-top: 17px; line-height: 1.5; }
+.auth-preview-note { font-size: 12px; line-height: 1.5; color: #a8bbab; }
+html.auth-preview:not(.is-demo) .app-shell { display: none; }
+html.auth-preview.is-demo .auth-screen { display: none !important; }
+@media(max-width:520px) {
+  .auth-screen { padding: 22px 14px; align-items: center; }
+  .auth-screen .auth-brand { margin-bottom: 20px; }
+  .auth-screen .auth-card { padding: 22px 19px; border-radius: 18px; }
+}
