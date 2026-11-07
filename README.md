@@ -42,15 +42,6 @@ window.CONTADOR_CONFIG = {
 
 **Segurança:** Nunca confie só nas validações de JavaScript; as políticas do banco são a verdadeira separação entre contas. As operações usam um documento por usuário, revisão no servidor para detectar conflitos entre dispositivos e rejeição de documentos maiores que 1MB. A interface mostra falhas e impede novos salvamentos até recarregar se a confirmação remota falhar. O Supabase mantém a sessão de autenticação no navegador, mas os dados financeiros não são espelhados no localStorage do modo nuvem. Faça testes de permissões com dois usuários antes do lançamento comercial. O backup JSON fica sem criptografia e deve ser armazenado em segurança.
 
-## Publicar com GitHub Pages
-
-1. No GitHub, crie um novo repositório **Contador** (de preferência privado enquanto estiver em testes).
-2. Envie esta pasta inteira mantendo `index.html` na raiz, `css/`, `js/`, `supabase/` e `README.md`.
-3. Após revisar o código e as chaves públicas, caso queira disponibilizar para testes externos, deixe o repositório público, vá em **Settings > Pages > Deploy from a branch > main / root**.
-4. Se você usa o Windows, pode fazer o upload por Git usando o script `publicar-github.ps1` **depois de criar o repositório vazio**. Execute `powershell -ExecutionPolicy Bypass -File .\publicar-github.ps1` na pasta do projeto, caso sua política local impeça a execução direta.
-5. Adicione a URL publicada à lista de redirecionamentos do Auth. Para domínio próprio, configure DNS/CNAME e a opção **Custom domain** do Pages.
-
-**Atenção:** GitHub Pages é hospedagem de arquivos estáticos, não servidor de pagamento. Para Premium, uma API segura (Edge Function / servidor) com checkout e webhook assinado deve conceder o plano no banco; nunca dê Premium alterando `localStorage` ou apenas JavaScript.
 
 ## Organização
 
@@ -67,36 +58,6 @@ Contador/
 └── README.md
 ```
 
-## Testes mínimos antes de produção
 
-- Duas contas diferentes: cada uma vê apenas seus registros.
-- Cadastro, confirmação de e-mail, logout, login, esqueci minha senha e troca de senha.
-- Despesas, receitas, transferências, limite de cartão, pagamento de fatura e recorrências.
-- Teste simultâneo em duas abas e dois dispositivos, com conflito detectado.
-- Importar backup inválido e backup de uma versão anterior.
-- Aplicativo no celular via HTTPS; checar acessibilidade, limites e cenários de erro.
-
-**Estado:** código pronto para **configuração e testes reais de integração**; não confundir com produção auditada, pagamentos Premium ou conexão bancária efetiva.
-
-
-## Tela de acesso (inspirada no FitTrack)
-
-A interface inclui **entrar, criar conta com nome, mostrar/ocultar senha, recuperar senha e continuar com Google**. A identidade é própria do Contador.
-
-**Antes do Supabase estar configurado:** a tela funciona como apresentação do produto e o botão **Experimentar demonstração** abre a versão local. Os botões de login e cadastro NÃO simulam credenciais nem criam usuários. Dados inseridos na demonstração ficam apenas no navegador e devem ser fictícios.
-
-**Após configurar o Supabase:** o sistema usa login real e sincronização, e o modo demonstração sai da tela de acesso. Para habilitar o botão Google, também configure o provedor Google no **Authentication > Providers** do Supabase e os endereços de redirecionamento autorizados; o OAuth do Google pode exigir configuração adicional no Google Cloud.
-
-## Publicação provisória sem domínio
-
-URL prevista depois de habilitar o GitHub Pages: **https://glameiras.github.io/Contador/**.
-
-A integração do GitHub disponível no chat consegue editar código, mas a opção **Settings > Pages** precisa ser acionada pelo proprietário do repositório:
-1. Entre em https://github.com/glameiras/Contador/settings/pages
-2. Em **Build and deployment**, selecione **Deploy from a branch**.
-3. Selecione a branch **main** e a pasta **/(root)**, depois clique em **Save**.
-4. Aguarde a publicação e use o botão **Visit site** na mesma tela.
-
-O endereço `github.io` não exige Registro.br. O app tem URLs relativas (`./css/`, `./js/`) e navegação por hash, compatíveis com o subcaminho `/Contador/`.
 
 **Importante:** GitHub Pages só hospeda o frontend estático; Supabase fornece login, banco e políticas RLS. Não divulgue a demonstração como sistema bancário seguro nem use dados financeiros reais enquanto os testes de autenticação e isolamento entre usuários não forem concluídos.
