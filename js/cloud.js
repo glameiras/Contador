@@ -40,10 +40,11 @@ async function initCloud() {
       document.getElementById(m + "-form").hidden = m !== name;
     });
     tabs.hidden = !["login", "signup"].includes(name);
+    document.getElementById("auth-provider").hidden = !["login", "signup"].includes(name);
     tabs.querySelectorAll("[data-auth-mode]").forEach((b) =>
       b.setAttribute("aria-pressed", String(b.dataset.authMode === name)));
     document.getElementById("auth-title").textContent = ({
-      login: "Entre na sua conta", signup: "Crie sua conta",
+      login: "Bem-vindo de volta", signup: "Crie sua conta",
       forgot: "Recuperar acesso", reset: "Crie uma nova senha",
     })[name];
     status(note || (name === "login" ? "Seus dados, acessíveis apenas a você." :
@@ -127,11 +128,12 @@ async function initCloud() {
     if (error) throw error;
     if (data.user) await openUser(data.user);
   });
-  await submit("signup-form", async ({ email, password, confirm }) => {
+  await submit("signup-form", async ({ name, email, password, confirm }) => {
+    if (!name || name.trim().length < 2 || name.trim().length > 80) throw Error("Informe um nome válido.");
     if (password !== confirm) throw Error("As senhas não coincidem.");
     const { data, error } = await db.auth.signUp({
       email: email.trim(), password,
-      options: { emailRedirectTo: location.origin + location.pathname },
+      options: { emailRedirectTo: location.origin + location.pathname, data: { name: name.trim() } },
     });
     if (error) throw error;
     if (data.session?.user) await openUser(data.session.user);
@@ -151,6 +153,25 @@ async function initCloud() {
     recovering = false;
     mode("login", "Senha atualizada. Sua conta está pronta.");
     if (data.user) await openUser(data.user);
+  });
+  document.getElementById("google-login").addEventListener("click", async () => {
+    if (inflight) return;
+    inflight = true;
+    const button = document.getElementById("google-login");
+    button.disabled = true;
+    status("Conectando ao Google...");
+    try {
+      const { error } = await db.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: location.origin + location.pathname },
+      });
+      if (error) throw error;
+    } catch (error) {
+      status("Não foi possível entrar com Google: " + (error.message || "Confira o provedor de login no Supabase."));
+    } finally {
+      inflight = false;
+      button.disabled = false;
+    }
   });
   document.getElementById("logout").addEventListener("click", async () => {
     if (app.isSaving()) { window.alert("Aguarde o salvamento antes de sair."); return; }
