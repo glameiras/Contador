@@ -1,38 +1,79 @@
 # Contador
 
-Aplicativo web **mobile-first** de controle financeiro pessoal, desenvolvido com HTML, CSS e JavaScript puro.
+Aplicativo web **mobile-first** para controle financeiro pessoal, feito com HTML, CSS e JavaScript sem bundler.
 
-## Funcionalidades
-- Dashboard, contas e saldos, receitas e despesas.
-- Transferências entre contas, cartões, compras no crédito, limite e pagamento de faturas.
-- Recorrências, metas financeiras, histórico com filtros e edição, backup JSON.
-- Tema claro/escuro, privacidade visual, importação/exportação.
-- **Opcional:** cadastro, login, recuperação de senha e dados individuais no Supabase.
+## O que está funcionando
 
-## Rodar sem Supabase
-Abra no VS Code com Live Server ou rode `python -m http.server 5500` e acesse `http://localhost:5500`. Com `js/config.js` vazio, os dados ficam apenas no navegador (**modo LOCAL**).
+- Dashboard mensal, gráfico de entradas e gastos, saldos por conta.
+- Receitas, despesas, transferências entre contas (não alteram saldo total).
+- Cartões de crédito: limite, compras, fatura mensal e pagamento sem duplicar despesa.
+- Despesas recorrentes lançadas manualmente, metas, histórico com filtros, edição e exclusão.
+- Tema claro/escuro, ocultação visual de valores, exportação e **importação de backup JSON**.
+- **Modo nuvem configurável**: login, cadastro, confirmação de e-mail (conforme Auth), recuperação de senha, logout, sincronização por conta e RLS.
 
-## Ativar Supabase
-1. Crie um projeto em https://supabase.com/dashboard.
-2. Execute `supabase/schema.sql` no SQL Editor.
-3. Em `js/config.js`, informe apenas a **Project URL** HTTPS e a chave **publishable** pública (`sb_publishable_...`). **Nunca** exponha `service_role`, `sb_secret_`, senha de banco ou tokens privados.
-4. Configure Authentication > URL Configuration (Site URL e Redirect URLs), habilite autenticação por email e confira a configuração do envio de email.
-5. Teste cadastro, confirmação por email, login, logout, recuperar senha, RLS com **dois usuários**, atualização em duas abas, importação de backup e sincronização em dois aparelhos.
+> Importante: ainda **não** há conexão automática com bancos, cobrança Premium, cobrança Stripe, importação OFX, PIX nem aplicativos nativos Android/iOS. Premium aparece como planejamento, sem assinatura ativa. O app não é instituição financeira.
 
-O arquivo JSON de backup não é criptografado; guarde-o em local privado. A sincronização usa documento por usuário, RLS e revisão para impedir sobrescritas concorrentes. Ainda exige testes reais antes de liberar usuários.
+## Rodar localmente (sem Supabase)
 
-## GitHub Pages
-Após revisar o código, habilite Settings > Pages > Deploy from a branch > `main` / `(root)`. A URL padrão deve ser `https://glameiras.github.io/Contador/` quando publicada. Acrescente esse endereço aos Redirect URLs no Supabase. GitHub Pages é hospedagem estática, não backend de cobrança.
+Abra a pasta no VS Code e use *Live Server* ou o terminal:
 
-## Ainda não implementado
-Cobrança Premium, Stripe, conexão bancária automática, PIX, domínio próprio e integração de APIs externas. Não utilize esta versão como um serviço financeiro comercial sem testes adicionais de segurança.
-
-## Estrutura
+```bash
+python -m http.server 5500
 ```
-index.html
-css/style.css
-js/app.js
-js/cloud.js
-js/config.js
-supabase/schema.sql
+
+Acesse `http://localhost:5500`. Como `js/config.js` está vazio, o aplicativo abre em **modo LOCAL**, salvando no `localStorage`. O backup permite migração posterior.
+
+## Ativar autenticação e salvar no Supabase
+
+1. Crie um projeto no [Supabase](https://supabase.com/dashboard) e, no **SQL Editor**, execute `supabase/schema.sql`. Ele cria `contador_data`, habilita RLS por `auth.uid()` e configura a função transacional de salvamento com controle de versão.
+2. Em **Project Settings > API Keys**, copie somente a **Publishable key** (`sb_publishable_...`) e a **Project URL** (`https://...supabase.co`). Nunca use uma Secret key, `service_role` ou senha de banco.
+3. Preencha esses dois campos em `js/config.js`:
+
+```js
+window.CONTADOR_CONFIG = {
+  url: "https://SEU-PROJETO.supabase.co",
+  publishableKey: "sb_publishable_SUA-CHAVE-PUBLICA",
+};
 ```
+
+4. Em **Authentication > URL Configuration**, altere **Site URL** para seu domínio HTTPS e inclua em **Redirect URLs** os endereços completos que vão receber confirmação e recuperação (por exemplo, `https://usuario.github.io/Contador/` e `http://localhost:5500/` apenas para testes). Habilite o provedor **Email** e confirme que o serviço de e-mail do Supabase está adequado antes de abrir cadastro público.
+5. Rode o projeto via Live Server, faça um cadastro de teste, confirme o e-mail e teste login, lançamento, reload, saída e recuperação de senha. O arquivo `js/cloud.js` usa **Supabase JS 2.119.0** no CDN; o navegador precisa de internet.
+6. Para importar os dados locais, primeiro entre no modo local, exporte o backup e guarde-o. Depois ative a nuvem, faça login e importe o arquivo em **Preferências**. A importação **substitui** os dados existentes, mediante confirmação.
+
+**Segurança:** Nunca confie só nas validações de JavaScript; as políticas do banco são a verdadeira separação entre contas. As operações usam um documento por usuário, revisão no servidor para detectar conflitos entre dispositivos e rejeição de documentos maiores que 1MB. A interface mostra falhas e impede novos salvamentos até recarregar se a confirmação remota falhar. O Supabase mantém a sessão de autenticação no navegador, mas os dados financeiros não são espelhados no localStorage do modo nuvem. Faça testes de permissões com dois usuários antes do lançamento comercial. O backup JSON fica sem criptografia e deve ser armazenado em segurança.
+
+## Publicar com GitHub Pages
+
+1. No GitHub, crie um novo repositório **Contador** (de preferência privado enquanto estiver em testes).
+2. Envie esta pasta inteira mantendo `index.html` na raiz, `css/`, `js/`, `supabase/` e `README.md`.
+3. Após revisar o código e as chaves públicas, caso queira disponibilizar para testes externos, deixe o repositório público, vá em **Settings > Pages > Deploy from a branch > main / root**.
+4. Se você usa o Windows, pode fazer o upload por Git usando o script `publicar-github.ps1` **depois de criar o repositório vazio**. Execute `powershell -ExecutionPolicy Bypass -File .\publicar-github.ps1` na pasta do projeto, caso sua política local impeça a execução direta.
+5. Adicione a URL publicada à lista de redirecionamentos do Auth. Para domínio próprio, configure DNS/CNAME e a opção **Custom domain** do Pages.
+
+**Atenção:** GitHub Pages é hospedagem de arquivos estáticos, não servidor de pagamento. Para Premium, uma API segura (Edge Function / servidor) com checkout e webhook assinado deve conceder o plano no banco; nunca dê Premium alterando `localStorage` ou apenas JavaScript.
+
+## Organização
+
+```text
+Contador/
+├── index.html
+├── css/style.css
+├── js/
+│   ├── app.js       # lógica financeira + validações
+│   ├── cloud.js     # login, recuperação, sessão e sincronização
+│   └── config.js    # SOMENTE configurações publicáveis
+├── supabase/schema.sql
+├── publicar-github.ps1
+└── README.md
+```
+
+## Testes mínimos antes de produção
+
+- Duas contas diferentes: cada uma vê apenas seus registros.
+- Cadastro, confirmação de e-mail, logout, login, esqueci minha senha e troca de senha.
+- Despesas, receitas, transferências, limite de cartão, pagamento de fatura e recorrências.
+- Teste simultâneo em duas abas e dois dispositivos, com conflito detectado.
+- Importar backup inválido e backup de uma versão anterior.
+- Aplicativo no celular via HTTPS; checar acessibilidade, limites e cenários de erro.
+
+**Estado:** código pronto para **configuração e testes reais de integração**; não confundir com produção auditada, pagamentos Premium ou conexão bancária efetiva.

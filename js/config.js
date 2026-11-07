@@ -1,7 +1,8 @@
 /**
  * Configuração PÚBLICA do Supabase.
- * NUNCA inclua service_role, sb_secret_ ou chaves privadas.
- * Campos vazios = modo LOCAL, sem login.
+ * Cole apenas Project URL e Publishable key (ou chave anon legado).
+ * Nunca adicione sb_secret_*, service_role, senha, token pessoal ou chave Stripe aqui.
+ * Deixe os campos vazios para experimentar a versão LOCAL sem login.
  */
 window.CONTADOR_CONFIG = {
   url: "",

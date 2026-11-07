@@ -1,6 +1,8 @@
 /**
- * CONTADOR — Autenticação e sincronização via Supabase JS.
- * Só configure uma chave PUBLICÁVEL. O isolamento usa RLS no banco.
+ * CONTADOR — Auth + persistência com Supabase JS 2.119.0.
+ * Os dados financeiros NÃO são gravados no localStorage no modo nuvem.
+ * A chave publishable não é segredo. O isolamento é garantido pelas políticas
+ * RLS no banco; rode supabase/schema.sql antes de habilitar o modo nuvem.
  */
 const config = window.CONTADOR_CONFIG || {};
 if (document.documentElement.classList.contains("cloud-mode")) {
@@ -25,12 +27,18 @@ async function initCloud() {
   const authScreen = document.getElementById("auth-screen");
   const message = document.getElementById("auth-message");
   const tabs = document.getElementById("auth-tabs");
-  let signedUserId = null, pendingUserId = null, recovering = false;
-  let sessionTicket = 0, inflight = false;
+  let signedUserId = null;
+  let pendingUserId = null;
+  let recovering = false;
+  let sessionTicket = 0;
+  let inflight = false;
   const modes = ["login", "signup", "forgot", "reset"];
+
   function status(value) { message.textContent = value; }
   function mode(name, note = "") {
-    modes.forEach((m) => { document.getElementById(m + "-form").hidden = m !== name; });
+    modes.forEach((m) => {
+      document.getElementById(m + "-form").hidden = m !== name;
+    });
     tabs.hidden = !["login", "signup"].includes(name);
     tabs.querySelectorAll("[data-auth-mode]").forEach((b) =>
       b.setAttribute("aria-pressed", String(b.dataset.authMode === name)));
@@ -42,7 +50,7 @@ async function initCloud() {
       name === "signup" ? "Use um e-mail válido e uma senha forte." : ""));
   }
   function lock() {
-    sessionTicket++;
+    sessionTicket += 1;
     signedUserId = null;
     pendingUserId = null;
     app.lockCloud();
@@ -93,7 +101,7 @@ async function initCloud() {
       console.error("Falha ao carregar dados", error);
     }
   }
-  function submit(id, handler) {
+  async function submit(id, handler) {
     const form = document.getElementById(id);
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -101,9 +109,12 @@ async function initCloud() {
       inflight = true;
       form.querySelectorAll("button").forEach((b) => (b.disabled = true));
       status("Verificando...");
-      try { await handler(Object.fromEntries(new FormData(form))); }
-      catch (error) { status(getError(error).message); }
-      finally {
+      try {
+        const fields = Object.fromEntries(new FormData(form));
+        await handler(fields);
+      } catch (error) {
+        status(getError(error).message);
+      } finally {
         inflight = false;
         form.querySelectorAll("button").forEach((b) => (b.disabled = false));
       }
@@ -111,12 +122,12 @@ async function initCloud() {
   }
   document.querySelectorAll("[data-auth-mode]").forEach((b) =>
     b.addEventListener("click", () => { if (!inflight) mode(b.dataset.authMode); }));
-  submit("login-form", async ({ email, password }) => {
+  await submit("login-form", async ({ email, password }) => {
     const { data, error } = await db.auth.signInWithPassword({ email: email.trim(), password });
     if (error) throw error;
     if (data.user) await openUser(data.user);
   });
-  submit("signup-form", async ({ email, password, confirm }) => {
+  await submit("signup-form", async ({ email, password, confirm }) => {
     if (password !== confirm) throw Error("As senhas não coincidem.");
     const { data, error } = await db.auth.signUp({
       email: email.trim(), password,
@@ -126,14 +137,14 @@ async function initCloud() {
     if (data.session?.user) await openUser(data.session.user);
     else mode("login", "Se o cadastro for aceito, você receberá um e-mail de confirmação. Confira sua caixa de entrada e spam.");
   });
-  submit("forgot-form", async ({ email }) => {
+  await submit("forgot-form", async ({ email }) => {
     const { error } = await db.auth.resetPasswordForEmail(email.trim(), {
       redirectTo: location.origin + location.pathname,
     });
     if (error) throw error;
     mode("login", "Se o e-mail estiver cadastrado, enviaremos as instruções de recuperação.");
   });
-  submit("reset-form", async ({ password, confirm }) => {
+  await submit("reset-form", async ({ password, confirm }) => {
     if (password !== confirm) throw Error("As senhas não coincidem.");
     const { data, error } = await db.auth.updateUser({ password });
     if (error) throw error;
@@ -149,6 +160,7 @@ async function initCloud() {
     mode("login", "Você saiu da sua conta.");
   });
   db.auth.onAuthStateChange((event, session) => {
+    // Callback sem chamadas assíncronas ao cliente: evita deadlock no SDK.
     if (event === "PASSWORD_RECOVERY") {
       recovering = true;
       lock();
@@ -158,6 +170,7 @@ async function initCloud() {
       lock();
       mode("login", "Entre novamente para acessar seus dados.");
     } else if (session?.user && !recovering) {
+      // Solicita acesso somente após o cliente concluir o evento de Auth.
       queueMicrotask(() => { void openUser(session.user); });
     } else if (event === "INITIAL_SESSION") {
       lock();

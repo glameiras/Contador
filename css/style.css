@@ -707,6 +707,7 @@ dialog::backdrop {
     }
   }
 }
+
 /* Acesso individual — adaptado para mobile */
 html.cloud-mode:not(.is-authed) .app-shell { display:none; }
 .auth-screen { min-height:100vh; min-height:100dvh; display:grid; place-items:center; padding:24px 16px; background:var(--bg); }

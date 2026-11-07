@@ -324,6 +324,8 @@ function commit(next, message = "Salvo com sucesso.") {
   if (blocked || cloudSavePending) throw Error("Aguarde a operação anterior.");
   validate(next);
   if (cloudBackend) {
+    // A nuvem confirma o salvamento antes de o novo estado aparecer na interface.
+    // Regras RLS e revisão otimista são verificadas no PostgreSQL.
     cloudSavePending = true;
     cloudBackend.save(next).then(() => {
       state = next;
@@ -332,13 +334,14 @@ function commit(next, message = "Salvo com sucesso.") {
       notify(message);
     }).catch((error) => {
       cloudSavePending = false;
-      blocked = true;
+      blocked = true; // Nunca sobrescreva uma revisão remota em conflito.
       notify("Não foi possível salvar: " + (error.message || "erro de conexão") + ". Recarregue a página para consultar os dados salvos.");
       console.error("Erro de persistência", error);
     });
     notify("Salvando com segurança...");
     return;
   }
+  // Modo local: impede conflito entre abas, preservando a versão anterior.
   const disk = localStorage.getItem(KEY);
   if (disk !== JSON.stringify(state))
     throw Error("Os dados mudaram em outra aba. Recarregue antes de continuar.");
