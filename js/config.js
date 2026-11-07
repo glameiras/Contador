@@ -5,8 +5,8 @@
  * Deixe os campos vazios para experimentar a versão LOCAL sem login.
  */
 window.CONTADOR_CONFIG = {
-  url: "",
-  publishableKey: "",
+  url: "https://upilhblozpwsiulybnsw.supabase.co",
+  publishableKey: "sb_publishable__FMDjPs69-zVcWMwBmw9hw_rYM96e_I",
 };
 if (window.CONTADOR_CONFIG.url && window.CONTADOR_CONFIG.publishableKey) {
   document.documentElement.classList.add("cloud-mode");
