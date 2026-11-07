@@ -13,8 +13,10 @@
     />
     <title>Contador | Início</title>
     <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/auth.css" />
     <script src="./js/config.js"></script>
     <script src="./js/app.js" defer></script>
+    <script src="./js/auth-ui.js" defer></script>
     <script type="module" src="./js/cloud.js"></script>
   </head>
   <body>
@@ -553,38 +555,62 @@
       <footer>Contador · Seu dinheiro na direção certa.</footer>
     </div>
     <section id="auth-screen" class="auth-screen" hidden aria-label="Acessar Contador">
-      <div class="auth-card">
-        <div class="auth-brand"><span class="brand-mark">c.</span> Contador</div>
-        <p class="eyebrow">FINANÇAS DO SEU JEITO</p>
-        <h1 id="auth-title">Entre na sua conta</h1>
-        <p id="auth-message" class="muted" role="status" aria-live="polite">Seu dinheiro, seu espaço.</p>
-        <div class="auth-tabs" id="auth-tabs">
-          <button data-auth-mode="login" type="button" aria-pressed="true">Entrar</button>
-          <button data-auth-mode="signup" type="button" aria-pressed="false">Criar conta</button>
+      <div class="auth-wrap">
+        <div class="auth-brand">
+          <span class="brand-mark" aria-hidden="true">c.</span>
+          <div class="auth-brand-copy"><strong>Contador</strong><small>Seu dinheiro na direção certa.</small></div>
         </div>
-        <form id="login-form" class="form-grid auth-form" autocomplete="on">
-          <label>E-mail<input type="email" name="email" required autocomplete="email" maxlength="254" /></label>
-          <label>Senha<input type="password" name="password" required autocomplete="current-password" /></label>
-          <button class="primary" type="submit">Entrar</button>
-          <button class="text-button" type="button" data-auth-mode="forgot">Esqueci minha senha</button>
-        </form>
-        <form id="signup-form" class="form-grid auth-form" hidden autocomplete="on">
-          <label>E-mail<input type="email" name="email" required autocomplete="email" maxlength="254" /></label>
-          <label>Senha (mínimo 12 caracteres)<input type="password" name="password" minlength="12" required autocomplete="new-password" /></label>
-          <label>Confirme a senha<input type="password" name="confirm" minlength="12" required autocomplete="new-password" /></label>
-          <button class="primary" type="submit">Criar conta</button>
-        </form>
-        <form id="forgot-form" class="form-grid auth-form" hidden>
-          <label>Seu e-mail<input type="email" name="email" maxlength="254" required autocomplete="email" /></label>
-          <button class="primary" type="submit">Enviar link de recuperação</button>
-          <button class="text-button" type="button" data-auth-mode="login">Voltar para entrar</button>
-        </form>
-        <form id="reset-form" class="form-grid auth-form" hidden>
-          <label>Nova senha (mínimo 12 caracteres)<input type="password" name="password" minlength="12" autocomplete="new-password" required /></label>
-          <label>Confirme a nova senha<input type="password" name="confirm" minlength="12" autocomplete="new-password" required /></label>
-          <button class="primary" type="submit">Atualizar senha</button>
-        </form>
-        <small>Seus dados são associados à sua conta e protegidos por regras de acesso no banco. Nunca compartilhe sua senha.</small>
+        <div class="auth-card">
+          <header>
+            <p class="eyebrow">UM LUGAR PARA SUAS FINANÇAS</p>
+            <h1 id="auth-title">Bem-vindo de volta</h1>
+            <p id="auth-message" class="muted" role="status" aria-live="polite">Entre para acompanhar suas finanças.</p>
+          </header>
+          <div class="auth-tabs" id="auth-tabs" role="group" aria-label="Acesso">
+            <button data-auth-mode="login" type="button" aria-pressed="true">Entrar</button>
+            <button data-auth-mode="signup" type="button" aria-pressed="false">Criar conta</button>
+          </div>
+          <form id="login-form" class="form-grid auth-form" autocomplete="on">
+            <label>E-mail<input type="email" name="email" placeholder="voce@email.com" required autocomplete="email" maxlength="254" /></label>
+            <label>Senha
+              <span class="auth-password">
+                <input id="login-password" type="password" name="password" placeholder="Digite sua senha" required autocomplete="current-password" />
+                <button type="button" class="auth-eye" data-toggle-password="login-password" aria-label="Mostrar ou ocultar senha" aria-pressed="false">Mostrar</button>
+              </span>
+            </label>
+            <button class="text-button" type="button" data-auth-mode="forgot">Esqueci minha senha</button>
+            <button class="primary" type="submit">Entrar →</button>
+          </form>
+          <form id="signup-form" class="form-grid auth-form" hidden autocomplete="on">
+            <label>Seu nome<input name="name" type="text" minlength="2" maxlength="80" placeholder="Como gostaria de ser chamado?" autocomplete="name" required /></label>
+            <label>E-mail<input name="email" type="email" maxlength="254" placeholder="voce@email.com" autocomplete="email" required /></label>
+            <label>Senha (mínimo 12 caracteres)
+              <span class="auth-password">
+                <input id="signup-password" type="password" name="password" minlength="12" required autocomplete="new-password" />
+                <button type="button" class="auth-eye" data-toggle-password="signup-password" aria-label="Mostrar ou ocultar senha" aria-pressed="false">Mostrar</button>
+              </span>
+            </label>
+            <label>Confirme a senha<input name="confirm" type="password" minlength="12" required autocomplete="new-password" /></label>
+            <button class="primary" type="submit">Criar conta →</button>
+          </form>
+          <form id="forgot-form" class="form-grid auth-form" hidden>
+            <label>Seu e-mail<input name="email" type="email" maxlength="254" placeholder="voce@email.com" required autocomplete="email" /></label>
+            <button class="primary" type="submit">Enviar link de recuperação</button>
+            <button class="text-button" type="button" data-auth-mode="login">Voltar para entrar</button>
+          </form>
+          <form id="reset-form" class="form-grid auth-form" hidden>
+            <label>Nova senha (mínimo 12 caracteres)<input name="password" type="password" minlength="12" autocomplete="new-password" required /></label>
+            <label>Confirme a nova senha<input name="confirm" type="password" minlength="12" autocomplete="new-password" required /></label>
+            <button class="primary" type="submit">Atualizar senha</button>
+          </form>
+          <div id="auth-provider" class="auth-provider">
+            <div class="auth-separator">ou</div>
+            <button id="google-login" class="auth-google" type="button">Continuar com Google</button>
+          </div>
+          <button id="demo-access" class="auth-demo-button" type="button" hidden>Experimentar demonstração →</button>
+          <p id="auth-preview-note" class="auth-preview-note" hidden>Modo demonstração: sem conta, sem sincronização. Os lançamentos ficam apenas neste navegador. Não use dados financeiros reais até conectar o Supabase.</p>
+          <small class="auth-footnote">Sua senha não é armazenada pelo Contador. O acesso individual usa autenticação do Supabase quando configurado.</small>
+        </div>
       </div>
     </section>
     <div id="notice" role="status" aria-live="polite" hidden></div>
