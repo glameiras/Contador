@@ -15,19 +15,19 @@ Aplicativo web **mobile-first** para controle financeiro pessoal, feito com HTML
 
 ## Rodar localmente (sem Supabase)
 
-Abra a pasta no VS Code e use *Live Server* ou o terminal:
+A configuração do Supabase já está ativa em `js/config.js`. Abra a pasta no VS Code e use *Live Server* ou o terminal:
 
 ```bash
 python -m http.server 5500
 ```
 
-Acesse `http://localhost:5500`. Como `js/config.js` está vazio, o aplicativo abre em **modo LOCAL**, salvando no `localStorage`. O backup permite migração posterior.
+Acesse `http://localhost:5500`. Agora o aplicativo usa **modo NUVEM com Supabase**; cadastros dependem de URLs autorizadas no painel. Para testes locais sem Supabase, use temporariamente uma cópia separada com os campos de `js/config.js` vazios. Nunca salve dados reais nesse modo de teste.
 
 ## Ativar autenticação e salvar no Supabase
 
-1. Crie um projeto no [Supabase](https://supabase.com/dashboard) e, no **SQL Editor**, execute `supabase/schema.sql`. Ele cria `contador_data`, habilita RLS por `auth.uid()` e configura a função transacional de salvamento com controle de versão.
+1. **Concluído em 07/11/2026:** projeto Supabase `Contador` (São Paulo), tabela `contador_data`, RLS por `auth.uid()` e RPC `save_contador` com controle de versão. O SQL original permanece em `supabase/schema.sql` para referência.
 2. Em **Project Settings > API Keys**, copie somente a **Publishable key** (`sb_publishable_...`) e a **Project URL** (`https://...supabase.co`). Nunca use uma Secret key, `service_role` ou senha de banco.
-3. Preencha esses dois campos em `js/config.js`:
+3. **Concluído:** os dois campos públicos já estão preenchidos em `js/config.js` (a publishable key não é segredo). Para alterar o projeto futuramente, use:
 
 ```js
 window.CONTADOR_CONFIG = {
@@ -61,3 +61,15 @@ Contador/
 
 
 **Importante:** GitHub Pages só hospeda o frontend estático; Supabase fornece login, banco e políticas RLS. Não divulgue a demonstração como sistema bancário seguro nem use dados financeiros reais enquanto os testes de autenticação e isolamento entre usuários não forem concluídos.
+
+
+## Etapas manuais ainda obrigatórias para login real
+
+Os dados e o banco já estão conectados, mas **não divulgamos o app como produção validada** até conferir URLs de autenticação e fluxos em navegador real.
+
+1. No [Supabase — URL Configuration](https://supabase.com/dashboard/project/upilhblozpwsiulybnsw/auth/url-configuration): configure **Site URL** como `https://glameiras.github.io/Contador/`, e adicione a mesma URL exatamente em **Redirect URLs**. Para testes em sua máquina, adicione separadamente `http://localhost:5500/`.
+2. No [Supabase — Providers](https://supabase.com/dashboard/project/upilhblozpwsiulybnsw/auth/providers), confirme que **Email** está habilitado. O botão Google exige configurar Google Cloud OAuth (Client ID/Secret) no provedor Google. Não cole esses segredos no GitHub.
+3. Teste dois e-mails diferentes e a recuperação de senha, além de redirecionamento e visibilidade dos dados. Configuração automática de URLs/provedores não está disponível na integração usada neste chat.
+4. Confira em [Settings → Pages](https://github.com/glameiras/Contador/settings/pages) se a publicação **main / root** está ativa e o link responde com o app. A publicação não foi confirmada automaticamente por estas ferramentas.
+
+**Status 07/11/2026:** banco, RLS e configuração pública do frontend implantados; Security Advisor sem alertas. Login humano real, fluxos de e-mail e Pages publicado requerem validação. O plano Supabase foi cotado em US$ 0/mês no momento da criação, dentro das condições e limites do plano gratuito.
