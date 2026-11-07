@@ -10,4 +10,7 @@ window.CONTADOR_CONFIG = {
 };
 if (window.CONTADOR_CONFIG.url && window.CONTADOR_CONFIG.publishableKey) {
   document.documentElement.classList.add("cloud-mode");
+} else {
+  // Mostra a tela de acesso para demonstrar o produto; NÃO finge autenticar.
+  document.documentElement.classList.add("auth-preview");
 }
