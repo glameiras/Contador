@@ -63,6 +63,10 @@ Contador/
 **Importante:** GitHub Pages só hospeda o frontend estático; Supabase fornece login, banco e políticas RLS. Não divulgue a demonstração como sistema bancário seguro nem use dados financeiros reais enquanto os testes de autenticação e isolamento entre usuários não forem concluídos.
 
 
+## Requisito de senha
+
+O cadastro e a recuperação exigem senha com pelo menos **12 caracteres**.
+
 ## Etapas manuais ainda obrigatórias para login real
 
 Os dados e o banco já estão conectados, mas **não divulgamos o app como produção validada** até conferir URLs de autenticação e fluxos em navegador real.
