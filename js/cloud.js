@@ -130,7 +130,7 @@ async function initCloud() {
   });
   await submit("signup-form", async ({ name, email, password, confirm }) => {
     if (!name || name.trim().length < 2 || name.trim().length > 80) throw Error("Informe um nome válido.");
-    if (typeof password !== "string" || [...password].length < 8) throw Error("Use uma senha com pelo menos 8 caracteres.");
+    if (typeof password !== "string" || [...password].length < 12) throw Error("Use uma senha com pelo menos 12 caracteres.");
     if (password !== confirm) throw Error("As senhas não coincidem.");
     const { data, error } = await db.auth.signUp({
       email: email.trim(), password,
@@ -148,7 +148,7 @@ async function initCloud() {
     mode("login", "Se o e-mail estiver cadastrado, enviaremos as instruções de recuperação.");
   });
   await submit("reset-form", async ({ password, confirm }) => {
-    if (typeof password !== "string" || [...password].length < 8) throw Error("Use uma senha com pelo menos 8 caracteres.");
+    if (typeof password !== "string" || [...password].length < 12) throw Error("Use uma senha com pelo menos 12 caracteres.");
     if (password !== confirm) throw Error("As senhas não coincidem.");
     const { data, error } = await db.auth.updateUser({ password });
     if (error) throw error;
